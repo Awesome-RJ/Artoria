@@ -113,20 +113,17 @@ def reply_afk(update: Update, context: CallbackContext):
 
 
 def check_afk(update, context, user_id, fst_name, userc_id):
-    if sql.is_afk(user_id):
-        user = sql.check_afk_status(user_id)
-        afk_time = sql.get_afk_time(user_id)
-        afk_since = get_readable_time((time.time() - afk_time))
-        if int(userc_id) == int(user_id):
-            return
-        if not user.reason:
-            res = "{} is afk since {}".format(fst_name, afk_since)
-        else:
-            res = "{} is afk since {}\nReason: {}".format(
+    if not sql.is_afk(user_id):
+        return
+    user = sql.check_afk_status(user_id)
+    afk_time = sql.get_afk_time(user_id)
+    afk_since = get_readable_time((time.time() - afk_time))
+    if int(userc_id) == int(user_id):
+        return
+    res = "{} is afk since {}\nReason: {}".format(
                 fst_name, afk_since, user.reason
-            )
-
-        update.effective_message.reply_text(res)
+            ) if user.reason else "{} is afk since {}".format(fst_name, afk_since)
+    update.effective_message.reply_text(res)
 
 
 def get_readable_time(seconds: int) -> str:
@@ -146,7 +143,7 @@ def get_readable_time(seconds: int) -> str:
     for x in range(len(time_list)):
         time_list[x] = str(time_list[x]) + time_suffix_list[x]
     if len(time_list) == 4:
-        ping_time += time_list.pop() + ", "
+        ping_time += f'{time_list.pop()}, '
 
     time_list.reverse()
     ping_time += ":".join(time_list)

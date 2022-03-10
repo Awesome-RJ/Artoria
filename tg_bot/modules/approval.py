@@ -43,14 +43,13 @@ def approval(update, context):
         )
         return
 
-    if target_user not in approve_list:
-        message.reply_text(
-            "{} is not an approved user. They are affected by normal commands.".format(
-                mention_html(member.user.id, member.user.first_name)
-            ),
-            parse_mode=ParseMode.HTML,
-        )
-        return
+    message.reply_text(
+        "{} is not an approved user. They are affected by normal commands.".format(
+            mention_html(member.user.id, member.user.first_name)
+        ),
+        parse_mode=ParseMode.HTML,
+    )
+    return
 
 
 @run_async
@@ -154,11 +153,8 @@ def approved(update, _):
     chat = update.effective_chat
     message = update.effective_message
     chat_id = str(chat.id)[1:]
-    approved_list = list(REDIS.sunion(f"approve_list_{chat_id}"))
-    approved_list.sort()
-    approved_list = ", ".join(approved_list)
-
-    if approved_list:
+    approved_list = sorted(REDIS.sunion(f"approve_list_{chat_id}"))
+    if approved_list := ", ".join(approved_list):
         message.reply_text(
             "The Following Users Are Approved: \n" "{}".format(approved_list),
             parse_mode=ParseMode.HTML,

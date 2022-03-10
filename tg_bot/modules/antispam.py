@@ -130,10 +130,9 @@ def gban(update: Update, context: CallbackContext):
             )
             return
 
-        old_reason = sql.update_gban_reason(
+        if old_reason := sql.update_gban_reason(
             user_id, user_chat.username or user_chat.first_name, reason
-        )
-        if old_reason:
+        ):
             message.reply_text(
                 "This user is already gbanned, for the following reason:\n"
                 "<code>{}</code>\n"

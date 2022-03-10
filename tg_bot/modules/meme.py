@@ -38,7 +38,7 @@ def kimtext(update, _):
     if message.reply_to_message:
         data = message.reply_to_message.text
     else:
-        data = str("Haha yes, I know how to kim text.")
+        data = "Haha yes, I know how to kim text."
 
     if not Path("kim.jpg").is_file():
         buffer = Image.open(
@@ -79,7 +79,7 @@ def hitlertext(update, _):
     if message.reply_to_message:
         data = message.reply_to_message.text
     else:
-        data = str("Haha yes, I know how to mock text.")
+        data = "Haha yes, I know how to mock text."
 
     if not Path("hitler.jpg").is_file():
         buffer = Image.open(
@@ -120,7 +120,7 @@ def trumptext(update, _):
     if message.reply_to_message:
         data = message.reply_to_message.text
     else:
-        data = str("Haha yes, I know how to Trump text.")
+        data = "Haha yes, I know how to Trump text."
 
     if not Path("trump.jpg").is_file():
         buffer = Image.open(
@@ -154,7 +154,7 @@ def spongemocktext(update, _):
     if message.reply_to_message:
         data = message.reply_to_message.text
     else:
-        data = str("Haha yes, I know how to mock text.")
+        data = "Haha yes, I know how to mock text."
 
     if not Path("bob.jpg").is_file():
         buffer = Image.open(
@@ -209,10 +209,10 @@ def rmemes(update, context):
         return
     res = res.json()
 
-    rpage = res.get(str("subreddit"))  # Subreddit
-    title = res.get(str("title"))  # Post title
-    memeu = res.get(str("url"))  # meme pic url
-    plink = res.get(str("postLink"))
+    rpage = res.get("subreddit")
+    title = res.get("title")
+    memeu = res.get("url")
+    plink = res.get("postLink")
 
     caps = f"× <b>Title</b>: {title}\n"
     caps += f"× <b>Subreddit:</b> <pre>r/{rpage}</pre>"
@@ -260,8 +260,7 @@ def chinesememes(update: Update, context: CallbackContext) -> str:
         IMG = "https://raw.githubusercontent.com/atanet90/expression-pack/master/img/{}.jpg".format(
             num
         )
-        maxnum = int(maxnum)
-        maxnum -= 1
+        maxnum = int(maxnum) - 1
         bot.send_photo(
             chat_id=message.chat_id,
             photo=IMG,

@@ -33,9 +33,7 @@ def info(update: Update, context: CallbackContext):
     bot, args = context.bot, context.args
     message = update.effective_message
     chat = update.effective_chat
-    user_id = extract_user(update.effective_message, args)
-
-    if user_id:
+    if user_id := extract_user(update.effective_message, args):
         user = bot.get_chat(user_id)
 
     elif not message.reply_to_message and not args:
@@ -86,8 +84,7 @@ def info(update: Update, context: CallbackContext):
         pass
 
     try:
-        status = bot.get_chat_member(chat.id, user.id).status
-        if status:
+        if status := bot.get_chat_member(chat.id, user.id).status:
             if status in "left":
                 text += "\n∘ Chat Status: <em>Not Here!</em>"
             elif status == "member":

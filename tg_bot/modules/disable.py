@@ -57,8 +57,7 @@ if is_module_loaded(FILENAME):
                     ):
                         return None
 
-                    filter_result = self.filters(update)
-                    if filter_result:
+                    if filter_result := self.filters(update):
                         chat = update.effective_chat
                         user = update.effective_user
                         # disabled, admincmd, user admin
@@ -204,8 +203,7 @@ if is_module_loaded(FILENAME):
     def commands(update, context):
         chat = update.effective_chat
         user = update.effective_user
-        conn = connected(context.bot, update, chat, user.id, need_admin=True)
-        if conn:
+        if conn := connected(context.bot, update, chat, user.id, need_admin=True):
             chat = dispatcher.bot.getChat(conn)
         else:
             if update.effective_message.chat.type == "private":

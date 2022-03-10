@@ -90,8 +90,7 @@ def lyrics(update: Update, context: CallbackContext):
     if not query:
         msg.reply_text("You haven't specified which song to look for!")
         return
-    song = Song.find_song(query)
-    if song:
+    if song := Song.find_song(query):
         if song.lyrics:
             reply = song.format()
         else:
@@ -256,7 +255,7 @@ def get_paste_content(update, context):
         r.raise_for_status()
 
     update.effective_message.reply_text(
-        "```" + escape_markdown(r.text) + "```", parse_mode=ParseMode.MARKDOWN
+        f"```{escape_markdown(r.text)}```", parse_mode=ParseMode.MARKDOWN
     )
 
 
@@ -343,7 +342,7 @@ def markdown_help(update, context):
 def wiki(update, context):
     kueri = re.split(pattern="wiki", string=update.effective_message.text)
     wikipedia.set_lang("en")
-    if len(str(kueri[1])) == 0:
+    if not str(kueri[1]):
         update.effective_message.reply_text("Enter keywords!")
     else:
         try:
@@ -475,9 +474,9 @@ def app(update: Update, _):
             .img["data-src"]
         )
         app_details = "<a href='" + app_icon + "'>📲&#8203;</a>"
-        app_details += " <b>" + app_name + "</b>"
+        app_details += f" <b>{app_name}</b>"
         app_details += "\n\n<i>Developer :</i> <a href='" + app_dev_link + "'>"
-        app_details += app_dev + "</a>"
+        app_details += f'{app_dev}</a>'
         app_details += "\n<i>Rating :</i> " + app_rating.replace(
             "Rated ", "⭐️ "
         ).replace(" out of ", "/").replace(" stars", "", 1).replace(
@@ -526,10 +525,10 @@ def rmemes(update, context):
         return
     res = res.json()
 
-    rpage = res.get(str("subreddit"))  # Subreddit
-    title = res.get(str("title"))  # Post title
-    memeu = res.get(str("url"))  # meme pic url
-    plink = res.get(str("postLink"))
+    rpage = res.get("subreddit")
+    title = res.get("title")
+    memeu = res.get("url")
+    plink = res.get("postLink")
 
     caps = f"- <b>Title</b>: {title}\n"
     caps += f"- <b>Subreddit:</b> <pre>r/{rpage}</pre>"

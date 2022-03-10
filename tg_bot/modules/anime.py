@@ -19,7 +19,7 @@ close_btn = "❌"
 def shorten(description, info="anilist.co"):
     msg = ""
     if len(description) > 700:
-        description = description[0:500] + "...."
+        description = description[:500] + "...."
         msg += f"\n*Description*: _{description}_[Read More]({info})"
     else:
         msg += f"\n*Description*:_{description}_"
@@ -30,17 +30,18 @@ def shorten(description, info="anilist.co"):
 def t(milliseconds: int) -> str:
     """Inputs time in milliseconds, to get beautified time,
     as string"""
-    seconds, milliseconds = divmod(int(milliseconds), 1000)
+    seconds, milliseconds = divmod(milliseconds, 1000)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
     tmp = (
-        ((str(days) + " Days, ") if days else "")
-        + ((str(hours) + " Hours, ") if hours else "")
-        + ((str(minutes) + " Minutes, ") if minutes else "")
-        + ((str(seconds) + " Seconds, ") if seconds else "")
-        + ((str(milliseconds) + " ms, ") if milliseconds else "")
+        (f'{str(days)} Days, ' if days else "")
+        + (f'{str(hours)} Hours, ' if hours else "")
+        + (f'{str(minutes)} Minutes, ' if minutes else "")
+        + (f'{str(seconds)} Seconds, ' if seconds else "")
+        + (f'{str(milliseconds)} ms, ' if milliseconds else "")
     )
+
     return tmp[:-2]
 
 
@@ -213,7 +214,7 @@ def anime(update, context):
             trailer_id = trailer.get("id", None)
             site = trailer.get("site", None)
             if site == "youtube":
-                trailer = "https://youtu.be/" + trailer_id
+                trailer = f"https://youtu.be/{trailer_id}"
         description = (
             json.get("description", "N/A")
             .replace("<i>", "")
@@ -283,8 +284,7 @@ def character(update, context):
         site_url = json.get("siteUrl")
         char_name = f"{json.get('name').get('full')}"
         msg += shorten(description, site_url)
-        image = json.get("image", None)
-        if image:
+        if image := json.get("image", None):
             image = image.get("large")
             buttons = [
                 [
@@ -489,10 +489,8 @@ def upcoming(update, context):
 def watchlist(update, context):
     us = update.effective_user
     message = update.effective_message
-    watchlis = list(REDIS.sunion(f"anime_watch_list{us.id}"))
-    watchlis.sort()
-    watchlis = "\n• ".join(watchlis)
-    if watchlis:
+    watchlis = sorted(REDIS.sunion(f"anime_watch_list{us.id}"))
+    if watchlis := "\n• ".join(watchlis):
         message.reply_text(
             "{}<b>'s Watchlist:</b>"
             "\n• {}".format(mention_html(us.id, us.first_name), watchlis),
@@ -532,10 +530,8 @@ def removewatchlist(update, context):
 def fvrtchar(update, context):
     us = update.effective_user
     message = update.effective_message
-    fvrt_char = list(REDIS.sunion(f"anime_fvrtchar{us.id}"))
-    fvrt_char.sort()
-    fvrt_char = "\n• ".join(fvrt_char)
-    if fvrt_char:
+    fvrt_char = sorted(REDIS.sunion(f"anime_fvrtchar{us.id}"))
+    if fvrt_char := "\n• ".join(fvrt_char):
         message.reply_text(
             "{}<b>'s Favorite Characters List:</b>"
             "\n• {}".format(mention_html(us.id, us.first_name), fvrt_char),
@@ -579,10 +575,8 @@ def removefvrtchar(update, context):
 def readmanga(update, context):
     us = update.effective_user
     message = update.effective_message
-    manga_list = list(REDIS.sunion(f"anime_mangaread{us.id}"))
-    manga_list.sort()
-    manga_list = "\n• ".join(manga_list)
-    if manga_list:
+    manga_list = sorted(REDIS.sunion(f"anime_mangaread{us.id}"))
+    if manga_list := "\n• ".join(manga_list):
         message.reply_text(
             "{}<b>'s Manga Lists:</b>"
             "\n• {}".format(mention_html(us.id, us.first_name), manga_list),

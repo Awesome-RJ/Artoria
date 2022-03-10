@@ -268,7 +268,7 @@ def reply_filter(update, context):
 
     chat_filters = sql.get_chat_triggers(chat.id)
     for keyword in chat_filters:
-        pattern = r"( |^|[^\w])" + re.escape(keyword) + r"( |$|[^\w])"
+        pattern = f"( |^|[^\\w]){re.escape(keyword)}( |$|[^\\w])"
         if re.search(pattern, to_match, flags=re.IGNORECASE):
 
             if MessageHandlerChecker.check_user(update.effective_user.id):
@@ -289,43 +289,40 @@ def reply_filter(update, context):
                     "chatname",
                     "mention",
                 ]
-                if filt.reply_text:
-                    valid_format = escape_invalid_curly_brackets(
+                if filt.reply_text and (
+                    valid_format := escape_invalid_curly_brackets(
                         filt.reply_text, VALID_WELCOME_FORMATTERS
                     )
-                    if valid_format:
-                        filtext = valid_format.format(
-                            first=escape(message.from_user.first_name),
-                            last=escape(
-                                message.from_user.last_name
-                                or message.from_user.first_name
-                            ),
-                            fullname=" ".join(
-                                [
-                                    escape(message.from_user.first_name),
-                                    escape(message.from_user.last_name),
-                                ]
-                                if message.from_user.last_name
-                                else [escape(message.from_user.first_name)]
-                            ),
-                            username="@" + escape(message.from_user.username)
-                            if message.from_user.username
-                            else mention_html(
-                                message.from_user.id, message.from_user.first_name
-                            ),
-                            mention=mention_html(
-                                message.from_user.id, message.from_user.first_name
-                            ),
-                            chatname=escape(message.chat.title)
-                            if message.chat.type != "private"
-                            else escape(message.from_user.first_name),
-                            id=message.from_user.id,
-                        )
-                    else:
-                        filtext = ""
+                ):
+                    filtext = valid_format.format(
+                        first=escape(message.from_user.first_name),
+                        last=escape(
+                            message.from_user.last_name
+                            or message.from_user.first_name
+                        ),
+                        fullname=" ".join(
+                            [
+                                escape(message.from_user.first_name),
+                                escape(message.from_user.last_name),
+                            ]
+                            if message.from_user.last_name
+                            else [escape(message.from_user.first_name)]
+                        ),
+                        username="@" + escape(message.from_user.username)
+                        if message.from_user.username
+                        else mention_html(
+                            message.from_user.id, message.from_user.first_name
+                        ),
+                        mention=mention_html(
+                            message.from_user.id, message.from_user.first_name
+                        ),
+                        chatname=escape(message.chat.title)
+                        if message.chat.type != "private"
+                        else escape(message.from_user.first_name),
+                        id=message.from_user.id,
+                    )
                 else:
                     filtext = ""
-
                 if filt.file_type in (sql.Types.BUTTON_TEXT, sql.Types.TEXT):
                     try:
                         context.bot.send_message(
@@ -443,7 +440,7 @@ def reply_filter(update, context):
                 try:
                     send_message(update.effective_message, filt.reply)
                 except BadRequest as excp:
-                    LOGGER.exception("Error in filters: " + excp.message)
+                    LOGGER.exception(f"Error in filters: {excp.message}")
             break
 
 

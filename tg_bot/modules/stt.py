@@ -65,11 +65,12 @@ async def _(event):
             }
             data = open(required_file_name, "rb").read()  # pylint: disable=PTC-W0010
             response = requests.post(
-                IBM_WATSON_CRED_URL + "/v1/recognize",
+                f'{IBM_WATSON_CRED_URL}/v1/recognize',
                 headers=headers,
                 data=data,
                 auth=("apikey", IBM_WATSON_CRED_PASSWORD),
             )
+
             r = response.json()
             if "results" in r:
                 # process the json to appropriate string format

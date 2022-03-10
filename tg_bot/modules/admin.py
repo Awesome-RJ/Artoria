@@ -246,8 +246,7 @@ def invite(update, context):
     msg = update.effective_message
     chat = update.effective_chat
 
-    conn = connected(context.bot, update, chat, user.id, need_admin=True)
-    if conn:
+    if conn := connected(context.bot, update, chat, user.id, need_admin=True):
         chat = dispatcher.bot.getChat(conn)
     else:
         if msg.chat.type == "private":
@@ -299,9 +298,10 @@ def adminlist(update, context):
         else:
             name = "{}".format(
                 mention_markdown(
-                    user.id, user.first_name + " " + (user.last_name or "")
+                    user.id, f'{user.first_name} ' + ((user.last_name or ""))
                 )
             )
+
 
         if user.is_bot:
             bot_admin_list.append(name)
@@ -332,9 +332,10 @@ def adminlist(update, context):
         else:
             name = "{}".format(
                 mention_markdown(
-                    user.id, user.first_name + " " + (user.last_name or "")
+                    user.id, f'{user.first_name} ' + ((user.last_name or ""))
                 )
             )
+
         if status == "administrator":
             if custom_title:
                 try:
